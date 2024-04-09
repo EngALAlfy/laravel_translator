@@ -7,7 +7,7 @@ Laravel Translator is a Python tool designed to facilitate the translation proce
 - Scans Laravel project files to extract translation keys and texts.
 - Supports manual translation of extracted texts into language files.
 - Automatic translation of extracted texts into specified languages.
-- Supports JSON translation for Laravel's `__("x")` and `__('x')` syntax.
+- Supports JSON translation for Laravel's `__("x")` and `__('x')` and `@lang('x')` and `@lang("x")` syntax.
 - Future plans include implementing AI-powered editing of translations.
 
 ## Usage
