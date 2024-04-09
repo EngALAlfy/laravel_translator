@@ -4,38 +4,38 @@ Laravel Translator is a Python tool designed to facilitate the translation proce
 
 ## Features
 
-- **Translation Key Extraction**: Scan Laravel projects to extract all translation keys used within the project.
-- **Manual Translation**: Assist developers in manually translating the extracted keys into language files.
-- **Future Plans**: Integration with online translation services for automatic translations and AI-powered editing of translations.
+- Scans Laravel project files to extract translation keys and texts.
+- Supports manual translation of extracted texts into language files.
+- Automatic translation of extracted texts into specified languages.
+- Supports JSON translation for Laravel's `__("x")` and `__('x')` syntax.
+- Future plans include implementing AI-powered editing of translations.
 
 ## Usage
 
-1. Clone the repository:
+1. **Installation**: Clone this repository to your local machine.
 
     ```bash
     git clone https://github.com/EngALAlfy/laravel_translator.git
     ```
-
-2. Install dependencies:
+2. **Setup**: Ensure you have Python installed on your system. Install the required Python packages by running:
 
     ```bash
     pip install -r requirements.txt
     ```
 
-3. Run the script:
+3. **Run**: Execute the script with the path to your Laravel project folder as an argument:
 
     ```bash
-    python translator.py /path/to/your/laravel_project
+    python translation_scanner.py /path/to/your/laravel_project
     ```
 
-    Replace `/path/to/your/laravel_project` with the path to your Laravel project.
+4. **Output**: The script will generate English (`en.json`) and Arabic (`ar.json`) translation files under the `output` folder within your project directory.
 
-## Future Plans
+## Dependencies
 
-In future updates, we plan to implement the following features:
-
-- Automatic translation using online services.
-- AI-based editing of translations to improve accuracy and efficiency.
+- [Python](https://www.python.org/) (3.6 or higher)
+- [deep-translator](https://pypi.org/project/deep-translator/)
+- [tqdm](https://pypi.org/project/tqdm/)
 
 ## Authors
 
