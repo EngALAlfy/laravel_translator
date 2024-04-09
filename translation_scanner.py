@@ -5,7 +5,7 @@ import json
 from deep_translator import GoogleTranslator
 from tqdm import tqdm
 
-def find_text_in_files(folder_path):
+def find_text_in_files(folder_path , ignored_folders=None):
     """
     Find text patterns in PHP files within the specified folder and its subfolders.
 
@@ -15,13 +15,19 @@ def find_text_in_files(folder_path):
     Returns:
         list: A list of unique text patterns found in the PHP files.
     """
+    if ignored_folders is None:
+        ignored_folders = []
+    
     try:
         text_set = set()  # Use a set to automatically avoid duplicates
 
         pattern = re.compile(r'__\(([\'"])([^\'"]+)\1\)')
 
         # Walk through each file in the folder and its subfolders
-        for root, _, files in os.walk(folder_path):
+        for root, dirs, files in os.walk(folder_path):
+            # Remove ignored folders from the list of directories to avoid traversing them
+            dirs[:] = [d for d in dirs if d not in ignored_folders]
+        
             for file_name in files:
                 # Skip non-PHP files
                 if not file_name.endswith('.php'):
@@ -30,18 +36,20 @@ def find_text_in_files(folder_path):
                 file_path = os.path.join(root, file_name)
 
                 # Read the file
-                with open(file_path, 'r', encoding='utf-8') as file:
-                    content = file.read()
+                try:
+                    with open(file_path, 'r', encoding='utf-8') as file:
+                        content = file.read()
 
-                    # Search for patterns in the file content
-                    matches = pattern.findall(content)
+                        # Search for patterns in the file content
+                        matches = pattern.findall(content)
 
-                    # Extract text from matches and add to set
-                    for match in matches:
-                        for group in match:
-                            if group:
-                                text_set.add(group)
-
+                        # Extract text from matches and add to set
+                        for match in matches:
+                            for group in match:
+                                if group:
+                                    text_set.add(group)
+                except UnicodeDecodeError as e:
+                    print(f"Error decoding file {file_path}: {e}")
         return list(text_set)  # Convert set back to list before returning
     except Exception as e:
         print(f"Error occurred while searching for text patterns: {e}")
@@ -106,7 +114,7 @@ if __name__ == "__main__":
             sys.exit(1)
 
         # Extract texts
-        texts = find_text_in_files(folder_path)
+        texts = find_text_in_files(folder_path, ignored_folders=["vendor" , "node_modules" , "public" , "storage" , "lang" , "bootstrap"])
 
         # Clean the list of texts
         cleaned_texts = clean_text_list(texts)
