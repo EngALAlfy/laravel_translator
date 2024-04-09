@@ -22,7 +22,7 @@ def find_text_in_files(folder_path , ignored_folders=None):
         text_set = set()  # Use a set to automatically avoid duplicates
 
         pattern = re.compile(r'__\(([\'"])([^\'"]+)\1\)')
-
+        pattern = re.compile(r'[@]lang\(([\'"])([^\'"]+)\1\)|__\(([\'"])([^\'"]+)\3\)')
         # Walk through each file in the folder and its subfolders
         for root, dirs, files in os.walk(folder_path):
             # Remove ignored folders from the list of directories to avoid traversing them
