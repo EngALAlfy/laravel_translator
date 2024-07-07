@@ -133,7 +133,7 @@ if __name__ == "__main__":
 
         # Write English translations to en.json
         with open(os.path.join(output_dir, "en.json"), 'w') as en_file:
-            json.dump({text: text for text in en_texts}, en_file, indent=4)
+            json.dump({text: text for text in en_texts}, en_file, indent=4, ensure_ascii=False)
         print(f"English translations have been saved to {project_name}/en.json")
 
         # Write Arabic translations to ar.json
