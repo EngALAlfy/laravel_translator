@@ -76,6 +76,32 @@ def clean_text_list(text_list):
         print(f"Error occurred while cleaning text patterns: {e}")
         return []
 
+def translate_to_english(texts):
+    """
+    Translate a list of texts from the source language to English using Google Translate API.
+
+    Args:
+        texts (list): List of texts to translate.
+
+    Returns:
+        dict: A dictionary mapping original texts to their English translations.
+    """
+    try:
+        translator = GoogleTranslator(source='auto', target='en')
+        en_texts = {}
+        with tqdm(total=len(texts), unit=' word', ncols=80, nrows=10, colour="green", desc="Translate into English") as pbar:
+            for text in texts:
+                try:
+                    translation = translator.translate(text)
+                    en_texts[text] = translation
+                    pbar.update(1)
+                except Exception as e:
+                    print(f"Error occurred while translating '{text}': {e}")
+        return en_texts
+    except Exception as e:
+        print(f"Error occurred during translation: {e}")
+        return {}
+
 def translate_to_arabic(texts):
     """
     Translate a list of texts from the source language to Arabic using Google Translate API.
@@ -122,7 +148,7 @@ if __name__ == "__main__":
         # Separate texts into Arabic and English translations
         # Translate texts to Arabic
         ar_texts = translate_to_arabic(cleaned_texts)
-        en_texts = cleaned_texts.copy()
+        en_texts = translate_to_english(cleaned_texts)
 
         # Extract project name from folder path
         project_name = os.path.basename(os.path.normpath(folder_path))
@@ -133,13 +159,13 @@ if __name__ == "__main__":
 
         # Write English translations to en.json
         with open(os.path.join(output_dir, "en.json"), 'w' , encoding='utf-8') as en_file:
-            json.dump({text: text for text in en_texts}, en_file, indent=4, ensure_ascii=False)
+            json.dump(en_texts, en_file, indent=4, ensure_ascii=False)
         print(f"English translations have been saved to {project_name}/en.json")
 
         # Write Arabic translations to ar.json
         with open(os.path.join(output_dir, "ar.json"), 'w', encoding='utf-8') as ar_file:
             json.dump(ar_texts, ar_file, indent=4, ensure_ascii=False)
-        print(f"Arabic translations have been saved to {project_name}/ar.json")
+        print(f"Translations have been saved to {project_name}")
     except KeyboardInterrupt:
         print("\nTranslation interrupted. Exiting gracefully.")
         sys.exit(1)
