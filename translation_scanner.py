@@ -22,12 +22,27 @@ def find_text_in_files(folder_path , ignored_folders=None):
         text_set = set()  # Use a set to automatically avoid duplicates
 
         pattern = re.compile(r'__\(([\'"])([^\'"]+)\1\)')
-        pattern = re.compile(r'[@]lang\(([\'"])([^\'"]+)\1\)|__\(([\'"])([^\'"]+)\3\)')
+        pattern = re.compile(
+            r"""
+            (?:
+                @lang       # Match @lang
+                | __        # or match __
+            )
+            \(
+                \s*                  # optional whitespace
+                (['"])               # capture opening quote
+                (.*?)                # capture the translation key (non-greedy)
+                \1                   # closing quote
+                (?:\s*,\s*[^)]*)?    # optionally match comma + second argument until closing parenthesis
+            \)
+            """,
+            re.VERBOSE
+        )
         # Walk through each file in the folder and its subfolders
         for root, dirs, files in os.walk(folder_path):
-            # Remove ignored folders from the list of directories to avoid traversing them
-            dirs[:] = [d for d in dirs if d not in ignored_folders]
-        
+            # If we're at the top level (root == folder_path)
+            if os.path.abspath(root) == os.path.abspath(folder_path):
+                dirs[:] = [d for d in dirs if d not in ignored_folders]            
             for file_name in files:
                 # Skip non-PHP files
                 if not file_name.endswith('.php'):
@@ -69,7 +84,7 @@ def clean_text_list(text_list):
     try:
         cleaned_list = []
         for text in text_list:
-            if text and text != "'" and text != '"' and 'wireui' not in text:
+            if text and text != "'" and text != '"' and 'wireui' not in text and '::' not in text:
                 cleaned_list.append(text)
         return cleaned_list
     except Exception as e:
@@ -114,7 +129,7 @@ if __name__ == "__main__":
             sys.exit(1)
 
         # Extract texts
-        texts = find_text_in_files(folder_path, ignored_folders=["vendor" , "node_modules" , "public" , "storage" , "lang" , "bootstrap"])
+        texts = find_text_in_files(folder_path, ignored_folders=[".git" , "test" , "vendor" , ".idea" , "node_modules" , "public" , "storage" , "lang" , "bootstrap"])
 
         # Clean the list of texts
         cleaned_texts = clean_text_list(texts)
